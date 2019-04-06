@@ -47,7 +47,7 @@ How to start the template?
 }
 
 
-kapacitor define compute_location -template compute_location -vars asset_vars.json -dbrp kontakt.assets
+kapacitor define compute_location -template compute_location -vars asset_vars.json -dbrp my_building.assets
 
 
 
@@ -56,7 +56,7 @@ var where_filter = lambda: TRUE
 
 var asset_mac_address = '00000000'
 
-var building = "kontakt"
+var building = "my_building"
 
 var floor =  "first"
 
@@ -70,7 +70,7 @@ var where_filter = lambda: TRUE
 
 var asset_mac_address = '00000000'
 
-var building = "kontakt"
+var building = "my_building"
 
 var floor =  "first"
 
@@ -86,7 +86,7 @@ var accuracy = TRUE
 
 var chirp_events = batch
 
-	    |query('SELECT * FROM kontakt.autogen.asset_chirp_events where asset_mac_address=\'{asset_mac_address}\'')
+	    |query('SELECT * FROM my_building.autogen.asset_chirp_events where asset_mac_address=\'{asset_mac_address}\'')
 
 		 .period(100m)
 
@@ -107,7 +107,7 @@ chirp_events
 
 		|influxDBOut()
 
-             .database('kontakt')
+             .database('my_building')
 
              .retentionPolicy('autogen')
 
@@ -154,7 +154,7 @@ sed -i "s/{asset_mac_address}/$1/g" compute_location_$1.tick
 
 kapacitor define-template compute_location_template -tick compute_location_$1.tick
 
-kapacitor define compute_location -template compute_location_template -vars asset_vars.json  -dbrp kontakt.autogen
+kapacitor define compute_location -template compute_location_template -vars asset_vars.json  -dbrp my_building.autogen
 
 
 Execute script
@@ -379,7 +379,7 @@ class ChirpEventHandler(Handler):
         #fetch co-ordinate of receiver with MAX RSSI
 
 
-        response.point.fieldsString["building"] = 'kontakt'
+        response.point.fieldsString["building"] = 'my_building'
 
         response.point.fieldsString["floor"] = 'first'
 
