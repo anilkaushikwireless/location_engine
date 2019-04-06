@@ -1,19 +1,17 @@
 # location_engine
-Location engine using trilateration  
 
-Location Engine
 This is implemented as a TASK in Kapacitor on top of influxDB and computes location and stores Asset Location Events in the influxDB
 
 
 How Location Engine works?
 
-Location Engine is implemented as a kapacitor task.  It is configured for batch mode processing of all events in “last XXX” seconds for each Monitored Asset.  The XXX depends upon each asset and its “Chirp Period”. 
+Location Engine is implemented as a kapacitor task.  It is configured for batch mode processing of all events in “last         XXX” seconds for each Monitored Asset.  The XXX depends upon each asset and its “Chirp Period”. 
 
-If the Chirp Period is less than 1 second, XXX will be 2
+	If the Chirp Period is less than 1 second, XXX will be 2
 
-If the Chirp Period is a larger number such as 15 seconds, XXX will be 16 seconds.
+	If the Chirp Period is a larger number such as 15 seconds, XXX will be 16 seconds.
 
-We always add additional 1 second to get all chirps to take care of asset location.  This number is fine tuned in production
+	We always add additional 1 second to get all chirps to take care of asset location.  This number is fine tuned in production
 
 Algorithm
 
@@ -25,17 +23,17 @@ Compute location:
 
 If only one chirp then 
 
-If RSSI is very low then we mark “Accuracy” as Presence only
+	If RSSI is very low then we mark “Accuracy” as Presence only
 
-If RSSI is very strong then we use that receiver as the location
+	If RSSI is very strong then we use that receiver as the location
 
 If two or more chirps then we can report “closest” receiver location or “trilaterate” it
 
-Use the Received RSSI values and the asset configured RSSI value for trilateration
+	Use the Received RSSI values and the asset configured RSSI value for trilateration
 
-If all are “very low” RSSI values then we mark “Accuracy” as Presence only
+	If all are “very low” RSSI values then we mark “Accuracy” as Presence only
 
-We trilaterate only among the “not very low” RSSI values.
+	We trilaterate only among the “not very low” RSSI values.
 
 
 We will start following task “compute_location” for every asset that has “ALERT if Asset Presence LOST” configured.
@@ -58,7 +56,6 @@ var where_filter = lambda: TRUE
 
 var asset_mac_address = '00000000'
 
-
 var building = "kontakt"
 
 var floor =  "first"
@@ -72,8 +69,6 @@ var gps_y = "-122.036346"
 var where_filter = lambda: TRUE
 
 var asset_mac_address = '00000000'
-
-
 
 var building = "kontakt"
 
@@ -165,14 +160,6 @@ kapacitor define compute_location -template compute_location_template -vars asse
 Execute script
 
 ./create_task.sh <mac address of asset to be tracked>
-
-
-
-
-
-
-
-
 
 Configure kapacitor conf file to include UDF definition
 
