@@ -1,10 +1,12 @@
-# location_engine
+# BLE location engine using Kapacitor UDF function
+------------------------------------------------
 
+Location engine calculates the log lat of asset using trilateration. 
 This is implemented as a TASK in Kapacitor on top of influxDB and computes location and stores Asset Location Events in the influxDB
 
 
 How Location Engine works?
-
+-----------------------------
 Location Engine is implemented as a kapacitor task.  It is configured for batch mode processing of all events in “last         XXX” seconds for each Monitored Asset.  The XXX depends upon each asset and its “Chirp Period”. 
 
 	If the Chirp Period is less than 1 second, XXX will be 2
@@ -14,13 +16,13 @@ Location Engine is implemented as a kapacitor task.  It is configured for batch 
 	We always add additional 1 second to get all chirps to take care of asset location.  This number is fine tuned in production
 
 Algorithm
-
+------------
 At start each asset is stored in influx database as “Accuracy” Location UNKNOWN.
 Received N messages in last XXX seconds for this asset.
 Use this to triangulate and compute location and store the “Asset Location Event” in influxDB in Asset Location Data 
 
 Compute location: 
-
+-------------------
 If only one chirp then 
 
 	If RSSI is very low then we mark “Accuracy” as Presence only
@@ -40,7 +42,7 @@ We will start following task “compute_location” for every asset that has “
 
 
 How to start the template?
-
+-----------------------------
 
 {
     "asset_mac_address": {"type" : "string", "value" : "112233445566" }
@@ -52,37 +54,8 @@ kapacitor define compute_location -template compute_location -vars asset_vars.js
 
 
 
-var where_filter = lambda: TRUE
 
-var asset_mac_address = '00000000'
-
-var building = "my_building"
-
-var floor =  "first"
-
-var zone = "kitchen"
-
-var gps_x  = "37.368832"
-
-var gps_y = "-122.036346"
-
-var where_filter = lambda: TRUE
-
-var asset_mac_address = '00000000'
-
-var building = "my_building"
-
-var floor =  "first"
-
-var zone = "kitchen"
-
-var gps_x  = "37.368832"
-
-var gps_y = "-122.036346"
-
-var accuracy = TRUE
-
-
+sample compute_location.tck
 
 var chirp_events = batch
 
@@ -116,37 +89,10 @@ chirp_events
 
 
 
-
-
-Store asset location event:
-
-Asset location is stored as 
-
-Asset MAC address
-
-GPS Coordinates
-
-Building
-
-Floor
-
-Zone
-
-Accuracy
-
-Timestamp
-
-
-
-
-
 Now create following bash script to create task
 
-
-
 create_task.sh
-
-=============
+=========================================================================================================================
 
 cp compute_location.tick compute_location_$1.tick
 
@@ -155,7 +101,7 @@ sed -i "s/{asset_mac_address}/$1/g" compute_location_$1.tick
 kapacitor define-template compute_location_template -tick compute_location_$1.tick
 
 kapacitor define compute_location -template compute_location_template -vars asset_vars.json  -dbrp my_building.autogen
-
+==========================================================================================================================
 
 Execute script
 
@@ -164,8 +110,8 @@ Execute script
 Configure kapacitor conf file to include UDF definition
 
 
-Create compute_location.py
-
+Create UDF function compute_location.py
+-------------------------------------------
 
 import logging
 
@@ -184,11 +130,6 @@ logger = logging.getLogger()
 
 
 class ChirpEventHandler(Handler):
-
-
-
-
-
 
     class chirpevent(object):
 
@@ -417,14 +358,8 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-
-/etc/kapacitor/kapacitor.conf
-
+Modify /etc/kapacitor/kapacitor.conf
+----------------------------------------------
 
 Add following entry in UDF section
 
@@ -467,7 +402,8 @@ Add following entry in UDF section
 
 
 
-
+Start all the required process
+------------------------------------
 
 Start kapacitor and influxdb
 
