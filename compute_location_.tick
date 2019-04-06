@@ -1,0 +1,31 @@
+var where_filter = lambda: TRUE
+var asset_mac_address = '00000000'
+
+
+var building = "kontakt"
+var floor =  "first"
+var zone = "kitchen"
+var gps_x  = "37.368832"
+var gps_y = "-122.036346"
+var accuracy = TRUE
+
+
+var chirp_events = batch
+	    |query('SELECT * FROM kontakt.autogen.asset_chirp_events where asset_mac_address=\'\' order by time desc')
+		 .period(1m)
+		 .every(1m)
+
+chirp_events
+	    @tComputeLocation()
+	         .field('asset_mac_address')
+	         .field('receiver')
+		     .field('rssi')
+		     .field('time')
+		|influxDBOut()
+             .database('kontakt')
+             .retentionPolicy('autogen')
+             .measurement('assets_location_events')
+
+
+
+

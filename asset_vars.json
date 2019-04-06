@@ -1,0 +1,4 @@
+{   
+    "measurement": {"type" : "string", "value" : "asset_chirp_events" },
+    "asset_mac_address": {"type": "string", "value": "001122334456"}
+}
