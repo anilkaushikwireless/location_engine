@@ -1,7 +1,10 @@
 # BLE location engine using Kapacitor UDF function
 ------------------------------------------------
 
-Location engine calculates the log lat of asset using trilateration. 
+Location engine calculates the long and lat of asset using trilateration. 
+
+This is based on the assumption that asset would send chirp using BLE/WiFi and there would be receivers to listen for these chirps.Receivers would report out the chirp's RSSI value. Receivers would be deployed at well defined location (lat and long is known to the system).
+
 This is implemented as a TASK in Kapacitor on top of influxDB and computes location and stores Asset Location Events in the influxDB
 
 
